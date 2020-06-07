@@ -4,8 +4,8 @@
 #include <iostream>
 #include <map>
 #include <vector>
-#include <queue>
 #include <algorithm>
+#include "HEAP.hpp"
 
 struct node
 {
@@ -13,10 +13,14 @@ struct node
     long long value;
     node *left;
     node *right;
-    bool operator<(const node &x) const
+    bool operator<(const node &rhs) const
     {
-        return value > x.value;
-    }
+        return value < rhs.value;
+    };
+    bool operator>(const node &rhs) const
+    {
+        return value > rhs.value;
+    };
 };
 
 std::vector<std::pair<int, int>> constructFrqTable(const uint8_t *img, const int width, const int height)
@@ -43,15 +47,15 @@ std::vector<std::pair<int, int>> constructFrqTable(const uint8_t *img, const int
     return imgHuff;
 }
 
-std::priority_queue<node> preHuff(const std::vector<std::pair<int, int>> freqtable)
+Heap<node> preHuff(const std::vector<std::pair<int, int>> freqtable)
 {
-    std::priority_queue<node> preTree;
+    Heap<node> preTree;
     for (int i = 0; i < freqtable.size(); i++)
-        preTree.push({freqtable[i].first, freqtable[i].second, nullptr, nullptr});
+        preTree.insert({freqtable[i].first, freqtable[i].second, nullptr, nullptr});
     return preTree;
 }
 
-void constructTree(std::priority_queue<node> &frqtable)
+void constructTree(Heap<node> &frqtable)
 {
     while (frqtable.size() > 1)
     {
@@ -60,7 +64,7 @@ void constructTree(std::priority_queue<node> &frqtable)
         node *scnd = new node{frqtable.top().pixel, frqtable.top().value, frqtable.top().left, frqtable.top().right};
         frqtable.pop();
         node *newNode = new node{-1, frst->value + scnd->value, frst, scnd};
-        frqtable.push({newNode->pixel, newNode->value, newNode->left, newNode->right});
+        frqtable.insert({newNode->pixel, newNode->value, newNode->left, newNode->right});
     }
 }
 

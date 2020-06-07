@@ -4,7 +4,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
-#include <queue>
+#include "HEAP.hpp"
 
 void decodingTable(const std::map<int, std::string> enctable, std::map<std::string, int> &dectable)
 {

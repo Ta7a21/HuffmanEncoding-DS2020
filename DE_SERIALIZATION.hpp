@@ -4,7 +4,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
-#include <queue>
+#include "HEAP.hpp"
 #include <bitset>
 #include <sstream>
 #include <fstream>
@@ -37,6 +37,7 @@ void serialize(std::map<int, std::string> &encTable, const uint8_t *img, const i
             code = "";
         }
     }
+    code = "";
     std::bitset<32> h(height);
     std::string codeH = h.to_string();
     for (int i = 0; i < codeH.size(); i++)
@@ -52,7 +53,7 @@ void serialize(std::map<int, std::string> &encTable, const uint8_t *img, const i
     }
 
     outenc << char(maxValue) << char(paddingBits);
-
+    code = "";
     for (int i = 0; i < bits.size(); i++)
     {
         code += bits[i];
@@ -74,9 +75,22 @@ void serialize(std::map<int, std::string> &encTable, const uint8_t *img, const i
 
     //Serializing the frequency table
     std::ofstream outfrq("image.frq");
+    code = "";
     for (int i = 0; i < 256; i++)
     {
-        outfrq << frqtable[i].second << " ";
+        std::bitset<32> f(frqtable[i].second);
+        std::string codeF = f.to_string();
+        for (int i = 0; i < codeF.size(); i++)
+        {
+            code += codeF[i];
+            if (code.size() % 8 == 0)
+            {
+                int codeSer = stoi(code, 0, 2);
+                char temp = (char)codeSer;
+                outfrq << temp;
+                code = "";
+            }
+        }
     }
     outfrq.close();
 }
@@ -85,20 +99,29 @@ void deserialize(const std::string encfile, const std::string encfrq, std::vecto
 {
     //Deserializing frequency table
     std::ifstream infrq(encfrq);
-    int frqncy;
+    int frqncy,charDes;
+    std::string code = "";
+    char c;
     for (int i = 0; i < 256; i++)
     {
-        infrq >> frqncy;
-        frqtable[i].first = i;
-        frqtable[i].second = frqncy;
+        frqtable[i].first=i;
+        for (int i = 0; i < 4; i++)
+        {
+            infrq.get(c);
+            charDes = int(c);
+            std::bitset<8> x(charDes);
+            code += x.to_string();
+        }
+        frqtable[i].second = stoi(code, 0, 2);
+        code="";
     }
+
     infrq.close();
 
     //Deserializing encoded image
-    std::string line = "", code = "";
+    std::string line = "";
+    code="";
     std::ifstream inenc(encfile);
-    char c;
-    int charDes;
     for (int i = 0; i < 4; i++)
     {
         inenc.get(c);
@@ -116,9 +139,6 @@ void deserialize(const std::string encfile, const std::string encfrq, std::vecto
         code += x.to_string();
     }
     height = stoi(code, 0, 2);
-    /*getline(inenc, line); //Width and height
-    std::stringstream width_height_ss(line);
-    width_height_ss >> width >> height;*/
 
     inenc.get(c); //Max Value
     unsigned char temp = c;
