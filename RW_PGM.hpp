@@ -1,7 +1,6 @@
 #ifndef RW_PGM_HPP
 #define RW_PGM_HPP
 
-#include <cstdint>
 #include <fstream>
 #include <iostream>
 #include <sstream>

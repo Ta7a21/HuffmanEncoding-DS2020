@@ -23,28 +23,26 @@ struct node
     };
 };
 
-std::vector<std::pair<int, int>> constructFrqTable(const uint8_t *img, const int width, const int height)
+void constructFrqTable(const uint8_t *img, const int width, const int height,std::vector<std::pair<int, int>> &FreqTable)
 {
     std::map<int, int> mapHuff;
+
     for (int i = 0; i < width * height; i++)
         mapHuff[int(img[i])]++;
-    std::vector<std::pair<int, int>> imgHuff(256);
-    int i = 0;
     for (int i = 0; i < 256; i++)
     {
         if (!mapHuff[i])
         {
-            imgHuff[i].first = i;
-            imgHuff[i].second = 0;
+            FreqTable[i].first = i;
+            FreqTable[i].second = 0;
         }
         else
         {
-            imgHuff[i].first = i;
-            imgHuff[i].second = mapHuff[i];
+            FreqTable[i].first = i;
+            FreqTable[i].second = mapHuff[i];
         }
     }
-    sort(imgHuff.begin(), imgHuff.end());
-    return imgHuff;
+    sort(FreqTable.begin(), FreqTable.end());
 }
 
 Heap<node> preHuff(const std::vector<std::pair<int, int>> freqtable)
@@ -77,4 +75,13 @@ void encodingTable(std::string code, std::map<int, std::string> &encTable, const
     if (parent->pixel != -1)
         encTable[parent->pixel] = code;
 }
+
+void constructEncodingTable(std::vector<std::pair<int, int>> &FreqTable, std::map<int, std::string> &encTable)
+{
+    Heap<node> HuffmanTree = preHuff(FreqTable);
+    constructTree(HuffmanTree);
+    node *parent = new node{HuffmanTree.top().pixel, HuffmanTree.top().value, HuffmanTree.top().left, HuffmanTree.top().right};
+    encodingTable("", encTable, parent); //Constructing codes table
+}
+
 #endif //ENCODING_HPP

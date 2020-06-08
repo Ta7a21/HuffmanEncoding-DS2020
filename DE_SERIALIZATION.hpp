@@ -24,22 +24,32 @@ void serialize(std::map<int, std::string> &encTable, const uint8_t *img, const i
     std::ofstream outenc("image.enc"); //Creating file
 
     //Serializing the encoded image
+
+    //Serializing width
     std::bitset<32> w(width);
     std::string codeW = w.to_string();
+
     for (int i = 0; i < codeW.size(); i++)
     {
         code += codeW[i];
+
         if (code.size() % 8 == 0)
         {
             int codeSer = stoi(code, 0, 2);
+
             char temp = (char)codeSer;
+
             outenc << temp;
+
             code = "";
         }
     }
+
+    //Serializing height
     code = "";
     std::bitset<32> h(height);
     std::string codeH = h.to_string();
+
     for (int i = 0; i < codeH.size(); i++)
     {
         code += codeH[i];

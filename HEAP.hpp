@@ -56,6 +56,7 @@ private:
     void siftUp(size_t node)
     {
         auto parentNode = parent(node);
+
         if (data[parentNode] > data[node])
         {
             std::swap(data[parentNode], data[node]);
