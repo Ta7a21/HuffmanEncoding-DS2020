@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 
         compress(imgData, width, height, maxValue, FrequencyTable, encTable);
     }
-    else
+    else if(argc==4)
     {
         int width, height, maxValue;
         std::string encodedFile = argv[1], encodedFrqtable = argv[3], bits = "";
@@ -56,4 +56,11 @@ int main(int argc, char *argv[])
 
         std::cout<<"Files decompressed successfully"<<std::endl;
     }
+    else
+    {
+        puts("To compress, type: ./compress image_name.pgm");
+        puts("To decompress, type: ./compress encoded_image_name.enc -t encoded_frequency_table_name.frq");
+        exit(1);
+    }
+    
 }

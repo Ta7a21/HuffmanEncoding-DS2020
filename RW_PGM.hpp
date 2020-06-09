@@ -13,7 +13,7 @@ std::uint8_t *read_pgm_image(int &width, int &height, int &maxValue, const std::
     getline(in, line);          //Format
     if (line.compare("P5") != 0)
     {
-        std::cerr << "Error, not the true format" << std::endl;
+        std::cerr << "Please use P5 version only" << std::endl;
         exit(1);
     }
     getline(in, line); //Width and height
